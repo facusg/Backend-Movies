@@ -64,7 +64,7 @@ router.delete("/:id", (req, res) => {
   const sql = "DELETE FROM users WHERE id=?";
   conexion.query(sql, [iduser], (err, result) => {
     if (err) {
-      res.send("Error al obtener los usuarios");
+      res.send("Error al elminar el usuario");
     } else {
       res.send("Usuario Eliminado");
     }
