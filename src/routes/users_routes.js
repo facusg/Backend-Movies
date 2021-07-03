@@ -25,6 +25,7 @@ router.get("/:id", (req, res) => {
     }
   });
 });
+
 router.post("/:id", (req, res) => {
   const name = req.body.name;
   const lastname = req.body.lastname;
