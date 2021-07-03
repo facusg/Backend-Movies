@@ -13,8 +13,11 @@ router.post("/", (req, res) => {
       console.log("Error en la conexion auth");
     } else {
       if (result.length === 1) {
+        req.session.user = { name: result[0].name };
+        console.log(req.session.user);
+        console.log(result);
         res.json({ message: "Usuario valido" });
-      } else res.json({ message: false });
+      } else res.json({ auth: false, message: "Usuario incorrecto" });
     }
   });
 });
