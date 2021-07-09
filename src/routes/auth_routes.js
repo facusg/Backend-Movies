@@ -6,7 +6,7 @@ router.get("/check", (req, res) => {
   if (req.session.user) {
     res.json({ message: "ok", data: req.session.user });
   } else {
-    res.json({ message: "error" });
+    res.json({ message: "error", data: { user: null } });
   }
 });
 
@@ -53,6 +53,60 @@ router.delete("/", (req, res) => {
       res.status(500).json({ message: "Erro en el cierre de sesion" });
     } else {
       res.status(200).json({ message: "Sesion Cerrada" });
+    }
+  });
+});
+
+router.post("/register", (req, res) => {
+  name1 = req.body.name.charAt(0).toUpperCase();
+  lastname = req.body.lastname.charAt(0).toUpperCase();
+  email = req.body.email;
+  password = req.body.password;
+  const sql = `SELECT * FROM users WHERE email=? `;
+  const sql2 = `INSERT INTO users 
+                (name,lastname,email,password) 
+                  VALUES (?,?,?,?)`;
+
+  conexion.query(sql, [email], (err, result) => {
+    if (err) {
+      res.status(401).json({ message: "Error al crear usuario" });
+    } else if (result.length === 0) {
+      conexion.query(
+        sql2,
+        [name1, lastname, email, password],
+        (err, result) => {
+          if (err) {
+            res.status(401).json({ message: "Erro registro" });
+            console.log("error al crear usuario");
+          } else {
+            conexion.query(sql, [email], (err, result1) => {
+              if (err) {
+                res.status(401).json({ message: "Erro registro" });
+              } else {
+                console.log(result1);
+                req.session.user = {
+                  user: {
+                    id: result1[0].id,
+                    name: result1[0].name,
+                    email: result1[0].email,
+                  },
+                };
+                res.status(200).json({
+                  message: "Usuario valido",
+                  user: {
+                    id: result1[0].id,
+                    name: result1[0].name,
+                    email: result1[0].email,
+                  },
+                });
+                console.log("Usuario Agregado");
+              }
+            });
+          }
+        }
+      );
+    } else {
+      res.status(401).json({ message: "El mail ya se encuentra registrado" });
     }
   });
 });
