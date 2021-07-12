@@ -43,19 +43,28 @@ router.post("/:id", (req, res) => {
   });
 });
 
-router.put("/:id", (req, res) => {
-  const name = req.body.name;
-  const lastname = req.body.lastname;
-  const email = req.body.email;
-  const password = req.body.password;
+router.put("/password/:id", (req, res) => {
   const id = req.params.id;
+  console.log(req.body);
+  const password = req.body.password;
+  const newPassword = req.body.newpassword;
+  const sql = "SELECT * FROM users WHERE id=?";
+  const sql1 = `UPDATE users SET password=? WHERE id=?`;
 
-  const sql = `UPDATE users SET name = ?, lastname = ?,email = ?,password = ? WHERE id = ?`;
-  conexion.query(sql, [name, lastname, email, password, id], (err, result) => {
+  conexion.query(sql, [id], (err, result) => {
     if (err) {
-      res.send("Error al insertar un usuarios");
     } else {
-      res.send("Usuario agregado");
+      if (result[0].password == password) {
+        conexion.query(sql1, [newPassword, id], (err, result) => {
+          if (err) {
+            res.status(401).json({ message: "Error al cambiar contraseña" });
+          } else {
+            res.status(200).json({ message: "Contraseña cambiada" });
+          }
+        });
+      } else {
+        res.status(401).json({ message: "La contraseña actual es incorrecta" });
+      }
     }
   });
 });
