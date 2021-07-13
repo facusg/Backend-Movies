@@ -25,6 +25,7 @@ router.post("/", (req, res) => {
           user: {
             id: result[0].id,
             name: result[0].name,
+            lastname: result[0].lastname,
             email: result[0].email,
           },
         };
@@ -38,6 +39,7 @@ router.post("/", (req, res) => {
           user: {
             id: result[0].id,
             name: result[0].name,
+            lastname: result[0].lastname,
             email: result[0].email,
           },
         });
@@ -88,6 +90,7 @@ router.post("/register", (req, res) => {
                   user: {
                     id: result1[0].id,
                     name: result1[0].name,
+                    lastname: result1[0].lastname,
                     email: result1[0].email,
                   },
                 };
@@ -96,6 +99,7 @@ router.post("/register", (req, res) => {
                   user: {
                     id: result1[0].id,
                     name: result1[0].name,
+                    lastname: result1[0].lastname,
                     email: result1[0].email,
                   },
                 });

@@ -43,9 +43,46 @@ router.post("/:id", (req, res) => {
   });
 });
 
+router.put("/account/:id", (req, res) => {
+  const id = req.params.id;
+  const name = req.body.firstName;
+  const last = req.body.lastName;
+  const email = req.body.email;
+  const sql = "UPDATE users SET name=?,lastname=?,email=? WHERE id=?";
+  const sql1 = "SELECT * FROM users WHERE id=?";
+  conexion.query(sql, [name, last, email, id], (err, result) => {
+    if (err) {
+      res.status(401).json({ message: "Error al cambiar los datos" });
+    } else {
+      conexion.query(sql1, [1], (err, result) => {
+        if (err) {
+          res.status(401).json({ message: "Error al cambiar los datos" });
+        } else {
+          req.session.user = {
+            user: {
+              id: result[0].id,
+              name: result[0].name,
+              lastname: result[0].lastname,
+              email: result[0].email,
+            },
+          };
+          res.status(200).json({
+            message: "Usuario actualizado",
+            user: {
+              id: result[0].id,
+              name: result[0].name,
+              lastname: result[0].lastname,
+              email: result[0].email,
+            },
+          });
+        }
+      });
+    }
+  });
+});
+
 router.put("/password/:id", (req, res) => {
   const id = req.params.id;
-  console.log(req.body);
   const password = req.body.password;
   const newPassword = req.body.newpassword;
   const sql = "SELECT * FROM users WHERE id=?";
@@ -53,6 +90,7 @@ router.put("/password/:id", (req, res) => {
 
   conexion.query(sql, [id], (err, result) => {
     if (err) {
+      res.status(401).json({ message: "Error al cambiar contraseña" });
     } else {
       if (result[0].password == password) {
         conexion.query(sql1, [newPassword, id], (err, result) => {
@@ -70,15 +108,43 @@ router.put("/password/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  const iduser = req.params.id;
+  const id = req.params.id;
+  const password = req.body.deletePassword;
   const sql = "DELETE FROM users WHERE id=?";
-  conexion.query(sql, [iduser], (err, result) => {
+  const sql1 = "SELECT * FROM users WHERE id=?";
+
+  conexion.query(sql1, [id], (err, result) => {
+    if (err) {
+      res.status(401).json({ message: "Error al eliminar al usuario" });
+    } else {
+      if (result.length == 1 && result[0].password == password) {
+        conexion.query(sql, [id], (err, result) => {
+          if (err) {
+            res.status(401).json({ message: "Error al eliminar al usuario" });
+          } else {
+            req.session.destroy((err) => {
+              if (err) {
+                res
+                  .status(500)
+                  .json({ message: "Error en el cierre de sesion" });
+              } else {
+                res.status(200).json({ message: "Cuenta eliminada", user: "" });
+              }
+            });
+            // res.status(200).json({ message: "Usuario eliminado" });
+          }
+        });
+      }
+    }
+  });
+
+  /*  conexion.query(sql, [iduser], (err, result) => {
     if (err) {
       res.send("Error al elminar el usuario");
     } else {
       res.send("Usuario Eliminado");
     }
-  });
+  }); */
 });
 
 module.exports = router;
