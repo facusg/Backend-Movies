@@ -54,25 +54,29 @@ router.put("/account/:id", (req, res) => {
     if (err) {
       res.status(401).json({ message: "Error al cambiar los datos" });
     } else {
-      conexion.query(sql1, [1], (err, result) => {
+      conexion.query(sql1, [id], (err, result1) => {
         if (err) {
           res.status(401).json({ message: "Error al cambiar los datos" });
         } else {
+          console.log("----------------------------");
+          console.log(result1);
+          console.log("----------------------------");
+
           req.session.user = {
             user: {
-              id: result[0].id,
-              name: result[0].name,
-              lastname: result[0].lastname,
-              email: result[0].email,
+              id: result1[0].id,
+              name: result1[0].name,
+              lastname: result1[0].lastname,
+              email: result1[0].email,
             },
           };
           res.status(200).json({
             message: "Usuario actualizado",
             user: {
-              id: result[0].id,
-              name: result[0].name,
-              lastname: result[0].lastname,
-              email: result[0].email,
+              id: result1[0].id,
+              name: result1[0].name,
+              lastname: result1[0].lastname,
+              email: result1[0].email,
             },
           });
         }
