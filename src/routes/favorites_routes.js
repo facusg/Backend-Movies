@@ -3,13 +3,20 @@ const conexion = require("../conexions");
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  const sql = "SELECT * FROM favorites";
-  conexion.query(sql, (err, result) => {
+router.get("/:id", (req, res) => {
+  const sql3 = `SELECT idAPI,backdrop_path,title,overview,vote_average,trailerUrl FROM usersfavorites 
+                LEFT JOIN moviesyseries 
+                ON moviesyseries.idAPI=usersfavorites.idfavorite
+                WHERE idser=?`;
+
+  conexion.query(sql3, [req.params.id], (err, result) => {
     if (err) {
-      res.send("Error al obtener los favoritos");
+      console.log("aca estoy", err);
+      res.status(400).json({ message: "Error al obtener los favoritos" });
     } else {
-      res.json(result);
+      res
+        .status(200)
+        .json({ message: "Favoritos encontrados", results: result });
     }
   });
 });
