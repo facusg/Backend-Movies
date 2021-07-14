@@ -76,7 +76,6 @@ router.post("/", (req, res) => {
               res
                 .status(200)
                 .json({ message: "Este ya esta en tus favoritos" });
-              console.log("lo agrege ");
             } else {
               conexion.query(slq3, [idUser, idMovie], (err, result) => {
                 if (err) {
@@ -85,9 +84,10 @@ router.post("/", (req, res) => {
                     message: "Error al insertar en tabla users-favorites",
                   });
                 } else {
-                  res
-                    .status(200)
-                    .json({ message: "Favorito guardado correctamente" });
+                  res.status(200).json({
+                    message: "Favorito guardado correctamente",
+                    favoriteActive: "secondary",
+                  });
                 }
               });
             }
@@ -123,14 +123,23 @@ router.post("/", (req, res) => {
   });
 });
 
-router.delete("/:id", (req, res) => {
-  const idfavorite = req.params.id;
-  const sql = "DELETE FROM favorites WHERE id=?";
-  conexion.query(sql, [idfavorite], (err, result) => {
+router.delete("/:id/:favorite", (req, res) => {
+  const idUser = req.params.id;
+  const idFavorite = req.params.favorite;
+  console.log(idUser, idFavorite);
+  const sql = "DELETE FROM usersfavorites WHERE idser=? AND idfavorite=?";
+
+  conexion.query(sql, [idUser, idFavorite], (err, result) => {
     if (err) {
-      res.send("Error al eliminar el favorito");
+      console.log("No lo elimine");
+
+      res.status(400).json({ message: "Error al eliminar el favorito" });
     } else {
-      res.send("Usuario Eliminado");
+      console.log("lo elimine");
+
+      res
+        .status(200)
+        .json({ message: "Favorito Eliminado", favoriteActive: "default" });
     }
   });
 });
