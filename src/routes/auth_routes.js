@@ -60,10 +60,12 @@ router.delete("/", (req, res) => {
 });
 
 router.post("/register", (req, res) => {
-  name1 = req.body.name.charAt(0).toUpperCase();
-  lastname = req.body.lastname.charAt(0).toUpperCase();
+  name1 = req.body.name;
+  lastname = req.body.lastname;
   email = req.body.email;
   password = req.body.password;
+
+  console.log("------------", name1, lastname, email, password);
   const sql = `SELECT * FROM users WHERE email=? `;
   const sql2 = `INSERT INTO users 
                 (name,lastname,email,password) 
